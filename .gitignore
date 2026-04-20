@@ -1,0 +1,10 @@
+node_modules/
+bin/
+bun.lock
+bun.lockb
+*.log
+.DS_Store
+# recorded sessions used in manual testing
+tmp/
+sessions/
+!test/fixtures/

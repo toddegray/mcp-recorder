@@ -1,0 +1,26 @@
+{
+  "name": "mcp-recorder",
+  "version": "0.1.0",
+  "description": "Record, replay, and diff every MCP session. Catch silent regressions before your agent does.",
+  "type": "module",
+  "bin": {
+    "mcp-recorder": "./src/cli.ts"
+  },
+  "scripts": {
+    "build": "bun build --compile --outfile bin/mcp-recorder src/cli.ts",
+    "test": "bun test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude-code",
+    "agent-sdk",
+    "debugger",
+    "record-replay"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.4.0"
+  }
+}

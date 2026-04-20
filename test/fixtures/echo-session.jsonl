@@ -1,0 +1,7 @@
+{"seq":0,"t":1776658414.952,"dir":"c2s","msg":{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}}
+{"seq":1,"t":1776658414.953,"dir":"c2s","msg":{"jsonrpc":"2.0","id":2,"method":"tools/list"}}
+{"seq":2,"t":1776658414.953,"dir":"c2s","msg":{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"echo","arguments":{"message":"hello from demo"}}}}
+{"seq":3,"t":1776658414.969,"dir":"s2c","msg":{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}}}}}
+{"seq":4,"t":1776658414.969,"dir":"s2c","msg":{"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"echo","description":"Returns the message you pass it","inputSchema":{"type":"object","properties":{"message":{"type":"string"}},"required":["message"]}}]}}}
+{"seq":5,"t":1776658414.969,"dir":"s2c","msg":{"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"echo: hello from demo"}]}}}
+{"type":"summary","startedAt":1776658414.933,"endedAt":1776658414.973,"durationSec":0.04,"requests":3,"responses":3,"notifications":0,"batches":0,"malformed":0,"errors":0,"server":{"command":"bun","args":["test/fixtures/mock-server.ts"]}}
