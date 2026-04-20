@@ -1,7 +1,5 @@
 # mcp-recorder
 
-[![CI](https://github.com/toddegray/mcp-recorder/actions/workflows/ci.yml/badge.svg)](https://github.com/toddegray/mcp-recorder/actions/workflows/ci.yml)
-
 > Record, replay, and diff every MCP session. Catch silent regressions before your agent does.
 
 A record-and-replay debugger for the [Model Context Protocol](https://modelcontextprotocol.io). Sits transparently between an MCP client (Claude Code, Cursor, Zed) and an MCP server, logs every JSON-RPC message flowing in either direction to a JSONL file, replays recorded sessions against a fresh server, and semantically diffs the results so you can catch regressions before they hit prod.
