@@ -12,10 +12,12 @@ import { replay } from "./replay.ts";
 import { diffSessions, formatDiff } from "./diff.ts";
 import { showSession, formatList } from "./show.ts";
 import { defaultSessionDir } from "./session.ts";
+import { loadConfig } from "./config.ts";
+import { serve } from "./serve.ts";
 import { existsSync } from "node:fs";
 import { join, isAbsolute, dirname, basename } from "node:path";
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 
 function usage(): string {
   return `mcp-recorder ${VERSION} — record, replay, and diff MCP sessions
@@ -26,6 +28,7 @@ USAGE
   mcp-recorder show   <session> [--filter <method>] [--slow <ms>] [--json] [--no-color] [--dir <path>]
   mcp-recorder replay <session> [--out <name>] [--dir <path>] -- <cmd> [args...]
   mcp-recorder diff   <session-a> <session-b> [--no-color] [--dir <path>]
+  mcp-recorder serve
 
 COMMANDS
   record   Spawn an MCP server as a subprocess and record every JSON-RPC
@@ -36,6 +39,8 @@ COMMANDS
            new responses to <name>.replay.jsonl
   diff     Semantically diff two sessions, with id / timestamp / UUID / path
            normalization. Exit non-zero if sessions differ.
+  serve    Serve list/show/diff/replay as MCP tools over stdio so agents can
+           audit their own tool-use history.
 
 EXAMPLES
   mcp-recorder record --session fs-debug -- \\
@@ -72,6 +77,9 @@ async function main(argv: string[]): Promise<number> {
       return runReplay(rest);
     case "diff":
       return runDiff(rest);
+    case "serve":
+      await serve();
+      return 0;
     default:
       process.stderr.write(`unknown command: ${cmd}\n\n${usage()}`);
       return 2;
@@ -243,8 +251,12 @@ async function runDiff(args: string[]): Promise<number> {
     process.stderr.write(`session not found: ${pathB}\n`);
     return 2;
   }
-  const report = await diffSessions(pathA, pathB);
+  const { options, path: configPath } = loadConfig(dir);
+  const report = await diffSessions(pathA, pathB, options);
   const useColor = !args.includes("--no-color") && process.stdout.isTTY;
+  if (configPath) {
+    process.stderr.write(`[mcp-recorder] using config ${configPath}\n`);
+  }
   process.stdout.write(formatDiff(report, useColor) + "\n");
 
   const hasDrift =

@@ -87,9 +87,10 @@ Diff output has three states per message pair: `=` (equivalent), `~` (changed), 
 - Regression-catching end-to-end test: record → replay against deliberately-broken server → diff catches exactly the regression
 - Exit codes: `diff` exits 1 on any drift (CI-friendly)
 
-**v0.3:**
-- `serve` — expose list/show/diff/replay as MCP tools
-- `.mcp-recorder.toml` config loader for per-project normalization rules
+**v0.3 (shipped):**
+- `serve` — native MCP server over stdio (dogfoods our own framing, zero SDK dep), exposing list_sessions, show_session, diff_sessions, replay_session
+- `.mcp-recorder.toml` loader with walk-up search. Supports strip_ids, normalize_timestamps, normalize_uuids, path_prefix array, sorted_array array
+- GitHub Actions CI pinned to commit SHAs
 
 **later:**
 - HTTP/SSE transport support

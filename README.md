@@ -1,10 +1,12 @@
 # mcp-recorder
 
+[![CI](https://github.com/toddegray/mcp-recorder/actions/workflows/ci.yml/badge.svg)](https://github.com/toddegray/mcp-recorder/actions/workflows/ci.yml)
+
 > Record, replay, and diff every MCP session. Catch silent regressions before your agent does.
 
-A record-and-replay debugger for the [Model Context Protocol](https://modelcontextprotocol.io). Sits transparently between an MCP client (Claude Code, Cursor, Zed) and an MCP server, logs every JSON-RPC message flowing in either direction to a JSONL file, and — in upcoming versions — replays recorded sessions against a fresh server with semantic diffing to catch regressions.
+A record-and-replay debugger for the [Model Context Protocol](https://modelcontextprotocol.io). Sits transparently between an MCP client (Claude Code, Cursor, Zed) and an MCP server, logs every JSON-RPC message flowing in either direction to a JSONL file, replays recorded sessions against a fresh server, and semantically diffs the results so you can catch regressions before they hit prod.
 
-**Status: v0.2 — `record`, `list`, `show`, `replay`, `diff` all working. Server-change regressions are caught in 1 command.**
+**Status: v0.3 — record, replay, semantic diff, and a native MCP `serve` command so agents can audit themselves.**
 
 ![diff catching a regression](assets/diff-hero.png)
 
@@ -126,6 +128,7 @@ mcp-recorder list   [--dir <path>]
 mcp-recorder show   <session> [--filter <method>] [--slow <ms>] [--json] [--no-color] [--dir <path>]
 mcp-recorder replay <session> [--out <name>] [--dir <path>] -- <cmd> [args...]
 mcp-recorder diff   <session-a> <session-b> [--no-color] [--dir <path>]
+mcp-recorder serve
 ```
 
 `record` has **no chatter on stdout** — it would corrupt the JSON-RPC stream. Status messages go to stderr after the session closes, so client↔server passthrough is pure.
@@ -174,11 +177,66 @@ Anything that survives normalization is treated as signal. A real code change to
 - Server→client requests (e.g. `sampling/createMessage` from bidirectional MCP) are auto-answered by looking up the client's original response by method + stable params hash. If there's no match, replay errors loudly — better than guessing.
 - The new session is written as `<original-name>.replay.jsonl` (overridable with `--out`).
 
+## Configuration
+
+Drop a `.mcp-recorder.toml` next to your sessions directory (or at your project root — loader walks upward) to tune normalization per project:
+
+```toml
+[diff]
+strip_ids = true
+normalize_timestamps = true
+normalize_uuids = true
+
+# Absolute paths under these prefixes get replaced before compare.
+[[diff.path_prefix]]
+prefix = "/tmp/scratch-"
+replacement = "<SCRATCH>"
+
+[[diff.path_prefix]]
+prefix = "/Users/you/projects/myapp/.cache"
+replacement = "<CACHE>"
+
+# Arrays named `tools` are compared as sets, keyed by `name`.
+[[diff.sorted_array]]
+field = "tools"
+sort_by = "name"
+```
+
+The loader walks upward from the session dir, so one config at the project root covers every sub-project.
+
+## `serve` — agents auditing themselves
+
+```bash
+mcp-recorder serve
+```
+
+Boots a native MCP server over stdio (no SDK dependency — we dogfood our own framing). Exposes four tools:
+
+| Tool | Args | Returns |
+|------|------|---------|
+| `list_sessions`  | `dir?` | Sessions in the dir |
+| `show_session`   | `session`, `dir?` | Summary + entry count |
+| `diff_sessions`  | `a`, `b`, `dir?` | Per-request diff entries + counts |
+| `replay_session` | `session`, `command`, `args?`, `out?`, `dir?` | Replay path + summary |
+
+Wire it into Claude Code:
+
+```jsonc
+// ~/.claude/server.json
+{
+  "mcpServers": {
+    "mcp-recorder": { "command": "mcp-recorder", "args": ["serve"] }
+  }
+}
+```
+
+Now your agent can literally ask itself "did my last refactor break anything?" and get a machine-readable answer.
+
 ## Roadmap
 
-- **v0.3 — `serve`.** Expose `list`/`show`/`diff`/`replay` as MCP tools so agents can audit their own tool-use history.
-- **v0.3 — TOML config.** `.mcp-recorder.toml` for per-project normalization rules (path prefixes, sorted-array keys, numeric tolerance).
-- **later.** HTTP/SSE transport, web viewer, zstd compression, per-argument redaction.
+- **v0.4.** HTTP/SSE transport support (MCP is adding it; we'll follow).
+- **v0.4.** Redaction rules for sensitive argument values before they hit disk.
+- **later.** Web viewer for sessions, zstd compression, latency/error dashboards.
 
 See [docs/spec.md](docs/spec.md) for the full design spec.
 

@@ -1,6 +1,6 @@
 {
   "name": "mcp-recorder",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Record, replay, and diff every MCP session. Catch silent regressions before your agent does.",
   "type": "module",
   "bin": {
