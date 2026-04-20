@@ -81,14 +81,15 @@ Diff output has three states per message pair: `=` (equivalent), `~` (changed), 
 - End-to-end test with a mock MCP server
 - Single binary via `bun build --compile`
 
-**v0.2:**
-- `replay` — deterministic request replay
-- `diff` — semantic diff with normalization rules
-- `.mcp-recorder.toml` config loader
+**v0.2 (shipped):**
+- `replay` — deterministic request replay; bidi server→client requests served from canned original responses
+- `diff` — semantic diff with normalization (id stripping, ISO timestamps, UUIDs, path prefixes, sorted-array rules)
+- Regression-catching end-to-end test: record → replay against deliberately-broken server → diff catches exactly the regression
+- Exit codes: `diff` exits 1 on any drift (CI-friendly)
 
 **v0.3:**
 - `serve` — expose list/show/diff/replay as MCP tools
-- Fixture-based regression test (record → deliberately break server → diff catches exactly the break)
+- `.mcp-recorder.toml` config loader for per-project normalization rules
 
 **later:**
 - HTTP/SSE transport support

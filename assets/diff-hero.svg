@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="654" height="372" viewBox="0 0 654 372">
+<rect width="654" height="372" rx="10" ry="10" fill="#0b0e14"/>
+<rect x="0" y="0" width="654" height="36" rx="10" ry="10" fill="#141925"/>
+<rect x="0" y="26" width="654" height="10" fill="#141925"/>
+<circle cx="18" cy="18" r="6" fill="#f7768e"/>
+<circle cx="38" cy="18" r="6" fill="#e0af68"/>
+<circle cx="58" cy="18" r="6" fill="#9ece6a"/>
+<text x="327" y="22" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="12" text-anchor="middle">mcp-recorder — zsh</text>
+<text x="20" y="48" fill="#9ece6a" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">$ </text>
+<text x="36.8" y="48" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">mcp-recorder record </text>
+<text x="204.8" y="48" fill="#7aa2f7" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">--session orig -- bun mock-server.ts</text>
+<text x="20" y="68" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">[mcp-recorder] wrote orig.jsonl (3 req, 3 resp, 0 err, 0.04s)</text>
+<text x="20" y="88" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve"></text>
+<text x="20" y="108" fill="#9ece6a" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">$ </text>
+<text x="36.8" y="108" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">mcp-recorder replay </text>
+<text x="204.8" y="108" fill="#7aa2f7" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">orig --out orig.broken -- bun mock-server-broken.ts</text>
+<text x="20" y="128" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">[mcp-recorder] wrote orig.broken.jsonl (replayed 3 messages)</text>
+<text x="20" y="148" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve"></text>
+<text x="20" y="168" fill="#9ece6a" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">$ </text>
+<text x="36.8" y="168" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">mcp-recorder diff </text>
+<text x="188" y="168" fill="#7aa2f7" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">orig orig.broken</text>
+<text x="20" y="188" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve"></text>
+<text x="20" y="208" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">diff  A: orig.jsonl  ↔  B: orig.broken.jsonl</text>
+<text x="20" y="228" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">equal: 2    changed: 1    only-A: 0    only-B: 0</text>
+<text x="20" y="248" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve"></text>
+<text x="20" y="268" fill="#9ece6a" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">  = </text>
+<text x="53.6" y="268" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">initialize  </text>
+<text x="154.4" y="268" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">{}</text>
+<text x="20" y="288" fill="#9ece6a" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">  = </text>
+<text x="53.6" y="288" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">tools/list</text>
+<text x="20" y="308" fill="#e0af68" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">  ~ </text>
+<text x="53.6" y="308" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">tools/call  </text>
+<text x="154.4" y="308" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">{&quot;name&quot;:&quot;echo&quot;,&quot;arguments&quot;:{&quot;message&quot;:&quot;ship it&quot;}}</text>
+<text x="20" y="328" fill="#6a7080" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">      result.content[0].text:  </text>
+<text x="280.40000000000003" y="328" fill="#c6cad4" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="normal" xml:space="preserve">&quot;echo: ship it&quot;</text>
+<text x="406.40000000000003" y="328" fill="#e0af68" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">  → </text>
+<text x="440.00000000000006" y="328" fill="#f7768e" font-family="'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14" font-weight="bold" xml:space="preserve">&quot;ECHOED: ship it&quot;</text>
+</svg>

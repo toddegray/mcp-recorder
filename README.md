@@ -4,7 +4,9 @@
 
 A record-and-replay debugger for the [Model Context Protocol](https://modelcontextprotocol.io). Sits transparently between an MCP client (Claude Code, Cursor, Zed) and an MCP server, logs every JSON-RPC message flowing in either direction to a JSONL file, and — in upcoming versions — replays recorded sessions against a fresh server with semantic diffing to catch regressions.
 
-**Status: v0.1 — `record`, `list`, `show`. Replay and diff land next.**
+**Status: v0.2 — `record`, `list`, `show`, `replay`, `diff` all working. Server-change regressions are caught in 1 command.**
+
+![diff catching a regression](assets/diff-hero.png)
 
 ## Why
 
@@ -122,15 +124,60 @@ Fields:
 mcp-recorder record [--session <name>] [--dir <path>] -- <cmd> [args...]
 mcp-recorder list   [--dir <path>]
 mcp-recorder show   <session> [--filter <method>] [--slow <ms>] [--json] [--no-color] [--dir <path>]
+mcp-recorder replay <session> [--out <name>] [--dir <path>] -- <cmd> [args...]
+mcp-recorder diff   <session-a> <session-b> [--no-color] [--dir <path>]
 ```
 
 `record` has **no chatter on stdout** — it would corrupt the JSON-RPC stream. Status messages go to stderr after the session closes, so client↔server passthrough is pure.
 
+## Catching regressions
+
+The whole point:
+
+```bash
+# 1. record a session against your current server
+mcp-recorder record --session before -- node my-mcp-server.js
+
+# 2. refactor the server
+
+# 3. replay yesterday's session against the refactored server
+mcp-recorder replay before --out after -- node my-mcp-server.js
+
+# 4. diff
+mcp-recorder diff before after
+```
+
+`diff` exits **0** if the sessions are semantically equivalent (after normalizing ids, timestamps, UUIDs, and configured path prefixes), **1** if any request's response changed, was added, or was dropped. CI-friendly by design:
+
+```yaml
+# .github/workflows/mcp-regression.yml
+- run: mcp-recorder replay baseline --out replayed -- node server.js
+- run: mcp-recorder diff baseline replayed
+```
+
+### What "semantically equivalent" means
+
+The diff engine normalizes the following before comparing:
+
+- **Request/response `id`s** — the replay server assigns its own
+- **ISO-8601 timestamps** anywhere inside message content
+- **UUIDs** (8-4-4-4-12 hex pattern)
+- **Absolute path prefixes** (configurable)
+- **Arrays tagged as order-independent** (configurable, e.g. `tools` by `name`)
+
+Anything that survives normalization is treated as signal. A real code change to a tool's output shows up; a fresh UUID doesn't.
+
+## Replay semantics
+
+- Only client→server **requests** and notifications are replayed, in original `seq` order.
+- Each request waits for its response before the next one is sent (strictly deterministic).
+- Server→client requests (e.g. `sampling/createMessage` from bidirectional MCP) are auto-answered by looking up the client's original response by method + stable params hash. If there's no match, replay errors loudly — better than guessing.
+- The new session is written as `<original-name>.replay.jsonl` (overridable with `--out`).
+
 ## Roadmap
 
-- **v0.2 — replay.** Re-run a recorded session's requests against a fresh server instance, capture its responses, write them as `<name>.replay.jsonl`.
-- **v0.2 — diff.** Semantic diff of original vs. replay: normalizes ids, timestamps, UUIDs, absolute paths, and order-independent arrays so you see *real* changes, not noise.
 - **v0.3 — `serve`.** Expose `list`/`show`/`diff`/`replay` as MCP tools so agents can audit their own tool-use history.
+- **v0.3 — TOML config.** `.mcp-recorder.toml` for per-project normalization rules (path prefixes, sorted-array keys, numeric tolerance).
 - **later.** HTTP/SSE transport, web viewer, zstd compression, per-argument redaction.
 
 See [docs/spec.md](docs/spec.md) for the full design spec.
@@ -142,6 +189,8 @@ bun test            # all tests (framing, session, end-to-end via mock server)
 ```
 
 The end-to-end test ([test/record.e2e.test.ts](test/record.e2e.test.ts)) spawns the CLI's `record` command with a mock MCP server as its child, drives a real protocol conversation through it, and asserts every message was logged correctly on both directions — the same pipeline a real client uses.
+
+The **regression-catching test** ([test/replay-diff.e2e.test.ts](test/replay-diff.e2e.test.ts)) does a full record → replay → diff round-trip against two mock servers — one normal, one with a deliberately-broken tool output — and asserts the diff catches exactly the regression and nothing else. This is the headline capability.
 
 ## License
 
